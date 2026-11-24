@@ -1,59 +1,111 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import BaseHead from "../components/BaseHead.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
 ---
 
 <!doctype html>
-<html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header />
-		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This
-				template serves as a lightweight, minimally-styled starting point for anyone looking to
-				build a personal website, blog, or portfolio with Astro.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your{' '}
-				<code>astro.config.mjs</code> file. You can customize your setup with{' '}
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like
-				Tailwind, React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>
-					Edit this page in <code>src/pages/index.astro</code>
-				</li>
-				<li>
-					Edit the site header items in <code>src/components/Header.astro</code>
-				</li>
-				<li>
-					Add your name to the footer in <code>src/components/Footer.astro</code>
-				</li>
-				<li>
-					Check out the included blog posts in <code>src/content/blog/</code>
-				</li>
-				<li>
-					Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code>
-				</li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to{' '}
-				<a href="https://docs.astro.build/">read the docs</a> or{' '}
-				<a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out{' '}
-				<a href="https://github.com/Charca/astro-blog-template">astro-blog-template</a> by{' '}
-				<a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
-		</main>
-		<Footer />
-	</body>
+<html lang="en" dir="ltr">
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <section class="m3-card hero">
+        <button
+          id="miku-tag"
+          type="button"
+          class="m3-chip"
+          dir="ltr"
+          title="Click me"
+        >
+          01 // MIKU EDITION
+        </button>
+
+        <h1 class="hero-title">HELLLLLLOOO Stranger</h1>
+        <p class="hero-lead">
+          Yooo, so this is my personal blog where I write semi-technical posts about tech.
+        </p>
+
+        <div class="cta-row">
+          <a href="/blog" class="m3-btn m3-btn-filled">The Good Stuff</a>
+          <a
+            href="https://t.me/PlaceOfTHEfuture"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="m3-btn m3-btn-tonal"
+          >
+            My Telegram Channel
+          </a>
+        </div>
+      </section>
+    </main>
+    <Footer />
+  </body>
 </html>
+
+
+<style>
+  .hero {
+    margin-top: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .m3-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.15rem;
+    padding: 0.35rem 0.95rem;
+    border-radius: 9999px;
+    border: 1px solid color-mix(in srgb, var(--md-tertiary) 35%, transparent);
+    background: var(--md-tertiary-container);
+    color: var(--md-on-tertiary-container);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.2s var(--md-ease), box-shadow 0.2s var(--md-ease);
+  }
+
+  .m3-chip:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(255, 107, 168, 0.22);
+  }
+
+  .m3-chip.pop {
+    animation: chip-pop 0.28s var(--md-ease);
+  }
+
+  @keyframes chip-pop {
+    0% { transform: scale(0.92); }
+    60% { transform: scale(1.06); }
+    100% { transform: scale(1); }
+  }
+
+  .hero-title {
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--md-primary), var(--md-tertiary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-lead {
+    max-width: 560px;
+    margin: 0 auto 2rem;
+    font-size: 1.1rem;
+  }
+
+  .cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.85rem;
+  }
+</style>
