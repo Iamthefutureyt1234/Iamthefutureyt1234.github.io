@@ -1,84 +1,238 @@
 ---
-import { Image } from 'astro:assets';
-import type { CollectionEntry } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import FormattedDate from '../components/FormattedDate.astro';
-import Header from '../components/Header.astro';
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+import BaseHead from "../components/BaseHead.astro";
+import Footer from "../components/Footer.astro";
+import FormattedDate from "../components/FormattedDate.astro";
+import Header from "../components/Header.astro";
 
-type Props = CollectionEntry<'blog'>['data'];
+type Props = CollectionEntry<"blog">["data"] & {
+  dir?: "ltr" | "rtl";
+};
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, dir = "ltr" } = Astro.props;
 ---
 
-<html lang="en">
-	<head>
-		<BaseHead title={title} description={description} />
-		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
-			}
-			.hero-image {
-				width: 100%;
-			}
-			.hero-image img {
-				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
-			}
-			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
-			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
-			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
-			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
-			}
-			.last-updated-on {
-				font-style: italic;
-			}
-		</style>
-	</head>
+<html lang={dir === "rtl" ? "fa" : "en"} dir="ltr">
+  <head>
+    <BaseHead title={title} description={description} image={heroImage} />
+  </head>
 
-	<body>
-		<Header />
-		<main>
-			<article>
-				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
-				</div>
-				<div class="prose">
-					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} />
-							{updatedDate && (
-								<div class="last-updated-on">
-									Last updated on <FormattedDate date={updatedDate} />
-								</div>
-							)}
-						</div>
-						<h1>{title}</h1>
-						<hr />
-					</div>
-					<slot />
-				</div>
-			</article>
-		</main>
-		<Footer />
-	</body>
+  <body>
+    <Header />
+    <main>
+      <article id="post-article" class="m3-card post-article" dir={dir} data-dir={dir}>
+        {
+          heroImage && (
+            <div class="hero-image">
+              {typeof heroImage === "string" ? (
+                <img src={heroImage} alt={title} />
+              ) : (
+                <Image width={1020} height={510} src={heroImage} alt={title} />
+              )}
+            </div>
+          )
+        }
+
+        <div class="post-header">
+          <div class="meta-bar" dir="ltr">
+            <span class="date-chip">
+              <FormattedDate date={pubDate} />
+              {
+                updatedDate && (
+                  <span class="updated">
+                    · Updated <FormattedDate date={updatedDate} />
+                  </span>
+                )
+              }
+            </span>
+
+            <div class="dir-toggle" role="group" aria-label="Text direction">
+              <button
+                type="button"
+                class={`dir-btn ${dir === "ltr" ? "active" : ""}`}
+                data-set-dir="ltr"
+                aria-pressed={dir === "ltr" ? "true" : "false"}
+              >
+                LTR
+              </button>
+              <button
+                type="button"
+                class={`dir-btn ${dir === "rtl" ? "active" : ""}`}
+                data-set-dir="rtl"
+                aria-pressed={dir === "rtl" ? "true" : "false"}
+              >
+                RTL
+              </button>
+            </div>
+          </div>
+
+          <h1 class="post-title">{title}</h1>
+          <hr />
+        </div>
+
+        <div class="prose">
+          <slot />
+        </div>
+      </article>
+    </main>
+    <Footer />
+  </body>
 </html>
+
+<script>
+  document.addEventListener("click", (e) => {
+    const target = e.target;
+    if (!(target instanceof Element)) return;
+
+    const btn = target.closest("[data-set-dir]");
+    if (!(btn instanceof HTMLElement)) return;
+
+    const nextDir = btn.dataset.setDir;
+    const article = document.getElementById("post-article");
+    if (!article || (nextDir !== "ltr" && nextDir !== "rtl")) return;
+
+    article.setAttribute("dir", nextDir);
+    article.dataset.dir = nextDir;
+
+    document.querySelectorAll("[data-set-dir]").forEach((el) => {
+      if (!(el instanceof HTMLElement)) return;
+      const active = el.dataset.setDir === nextDir;
+      el.classList.toggle("active", active);
+      el.setAttribute("aria-pressed", String(active));
+    });
+  });
+</script>
+
+<style>
+  .post-article {
+    margin-top: 0.75rem;
+    padding: 2.25rem 2rem;
+  }
+
+  .hero-image {
+    width: 100%;
+    margin-bottom: 1.75rem;
+  }
+
+  .hero-image :global(img) {
+    display: block;
+    width: 100%;
+    max-height: 460px;
+    object-fit: cover;
+    margin: 0 auto;
+    border-radius: 20px;
+    box-shadow: var(--md-shadow-1);
+  }
+
+  .meta-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .date-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.85rem;
+    border-radius: 9999px;
+    background: var(--md-primary-container);
+    color: var(--md-on-primary-container);
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+
+  .updated {
+    font-weight: 500;
+    opacity: 0.85;
+  }
+
+  .dir-toggle {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem;
+    border-radius: 9999px;
+    background: var(--md-surface-container);
+    border: 1px solid var(--md-outline-variant);
+    gap: 0.15rem;
+  }
+
+  .dir-btn {
+    padding: 0.25rem 0.75rem;
+    border: none;
+    border-radius: 9999px;
+    background: transparent;
+    color: var(--md-on-surface-variant);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+      background-color 0.2s var(--md-ease),
+      color 0.2s var(--md-ease),
+      transform 0.2s var(--md-ease-spring);
+  }
+
+  .dir-btn:hover {
+    color: var(--md-on-surface);
+  }
+
+  .dir-btn:active {
+    transform: scale(0.94);
+  }
+
+  .dir-btn.active {
+    background: var(--md-primary);
+    color: var(--md-on-primary);
+  }
+
+  .post-title {
+    margin: 0.4rem 0 0;
+  }
+
+  .prose {
+    max-width: 68ch;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 720px) {
+    .post-article {
+      padding: 1.5rem 1.15rem;
+    }
+  }
+</style>
+
+<style is:global>
+  /* Centered RTL optimized for Persian with English words mixed in */
+  #post-article[data-dir="rtl"]
+    :is(h1, h2, h3, h4, h5, h6, p, li, blockquote, td, th) {
+    direction: rtl;
+    unicode-bidi: normal;
+    text-align: center;
+  }
+
+  /* Centered LTR for English posts */
+  #post-article[data-dir="ltr"]
+    :is(h1, h2, h3, h4, h5, h6, p, li, blockquote, td, th) {
+    direction: ltr;
+    unicode-bidi: normal;
+    text-align: center;
+  }
+
+  /* Keep inline code, flags, paths, and links from scrambling inside Persian lines */
+  #post-article :is(code, kbd) {
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+
+  /* Keep multi-line code blocks strictly LTR and left-aligned */
+  #post-article pre {
+    direction: ltr;
+    unicode-bidi: isolate;
+    text-align: left;
+  }
+</style>
